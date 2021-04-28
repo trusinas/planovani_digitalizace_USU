@@ -66,14 +66,17 @@ header <- createStyle(textDecoration = "bold")
 vyplnit <- createStyle(fgFill="yellow1")
 nevyplnovat <- createStyle(fgFill = "red")
 
-# přidání stylů, formátování
+# přidání stylů, formátování - úkony
 addStyle(wb,2, header, rows=1, cols=1:21)
 addStyle(wb, 2, vyplnit, rows=2:l, col=15:19, gridExpand = T)
 addStyle(wb, 2, nevyplnovat, rows = 2:l, cols = 20:21, gridExpand = T)
 setColWidths(wb, 2, cols=1:21, widths = 22.73) # nadefinování šířky sloupců, může být nadefinováno i na spec. sloupce, záleží
 freezePane(wb, 2, firstRow = T) # ukotvení 1. řádku 
 
-# přidání stylů, formátování
+# přidání stylů, formátování - návratnost
+addStyle(wb, 3, vyplnit, rows=c(2, 4), col=2, gridExpand = F)
+addStyle(wb, 3, nevyplnovat, rows = c(1, 3, 6:8, 10:12), cols = 2, gridExpand = F)
+setColWidths(wb, 3, cols=1, widths = 34)
 
 # TODO: přejmenování sloupců - ke službám přidat názvy
 
