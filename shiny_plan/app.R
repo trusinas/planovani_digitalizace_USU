@@ -25,6 +25,9 @@ sluzby <- read_rds("output/sluzby.rds")
 ovm <- read_rds("output/ovm.rds")
 agendy <- read_rds("output/agendy.rds")
 
+# info - postup
+info <- read.delim("data/navod.txt", header = F, encoding = "UTF-8")
+
 # seznam agend se službami
 agendy <- agendy %>% 
     filter(kod.agendy %in% unique(sluzby$kod.agendy)) %>% 
@@ -87,10 +90,7 @@ server <- function(input, output) {
         addWorksheet(wb, "seznam úkonů")
         addWorksheet(wb, "návratnost")
         
-        # TODO: info
-        info <- tibble(x1 = c("Informace, jak používat tabulku",
-                              "Postup"))
-        
+       
         # základ pro vzorec
         l <- nrow(sluzby)
         l <- l + 1
@@ -109,6 +109,7 @@ server <- function(input, output) {
         vzorec$x2 <- as.integer(vzorec$x2)
         
         # vyplnění dat do specifických listů
+        # writeData(wb, "info", x = info, colNames = FALSE)
         writeData(wb, "info", x = info, colNames = FALSE)
         writeData(wb, "seznam úkonů", x = sluzby, colNames = TRUE, withFilter = T) # na první řádek přidán autom. filtr
         writeData(wb, "návratnost", x = vzorec, colNames = FALSE)
@@ -125,6 +126,10 @@ server <- function(input, output) {
         writeFormula(wb, sheet = 3, x = "=2*B7/173.92/60", startCol = 2, startRow = 8)
         writeFormula(wb, sheet = 3, x = "=SUM('seznam úkonů'!U:U)", startCol = 2, startRow = 10)
         writeFormula(wb, sheet = 3, x = "=B11/2008/60", startCol = 2, startRow = 12)
+        
+        #nadefinování stylů buněk pro list info
+        navod.text <- createStyle(fgFill = "white")
+        zalamovat <- createStyle(wrapText = T)
         
         # nadefinování stylů buněk pro list seznam úkonů
         header <- createStyle(textDecoration = "bold")
@@ -144,7 +149,10 @@ server <- function(input, output) {
         
         # přidání stylů, formátování - info
         addStyle(wb, 1, header.navratnost, rows=1, cols = 1, gridExpand = F)
-        setColWidths(wb, 1, cols = 1, widths = 50) # nadefinování šířky sloupců - široké
+        setColWidths(wb, 1, cols = 1, widths = 117) # nadefinování šířky sloupců - široké
+        addStyle(wb, 1, navod.text, rows = 2:15, cols = 1, stack = TRUE) # pozadí textu
+        addStyle(wb, 1, zalamovat, rows = 2:15, cols = 1, stack = TRUE) # zalamování textu
+        addStyle(wb, 1, header, rows = c(5, 12), cols = 1, gridExpand = FALSE, stack = TRUE)
         
         # přidání stylů, formátování - návratnost
         addStyle(wb, 3, vyplnit, rows=c(2, 4), col=2, gridExpand = F)
@@ -190,7 +198,7 @@ server <- function(input, output) {
     })    
     # Download handler in Server
     output$downloadFile <- downloadHandler(
-        filename = function() paste0("output/ukony_", paste(input$agenda, collapse = "_"), ".xlsx"),
+        filename = function() paste0("ukony_", paste(input$agenda, collapse = "_"), ".xlsx"),
         content = function(file) {
             
             # uložení
