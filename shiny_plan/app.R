@@ -74,6 +74,7 @@ server <- function(input, output) {
     })
     # Input: Výběr agend ----
     output$select.agenda <- renderUI({
+        req(input$usu)
         selectInput("agenda", "2) Vyber agendu (lze více)", agendy %>% filter(nazev.ovm == input$usu) %>% pull(kod.agendy), selected = NULL,
                     multiple = TRUE, selectize = TRUE, width = "600px", size = NULL)
     })
