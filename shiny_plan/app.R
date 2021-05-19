@@ -116,9 +116,9 @@ server <- function(input, output) {
         writeData(wb, "návratnost", x = vzorec, colNames = FALSE)
         
         # přínosy úředník
-        writeFormula(wb, sheet = 2, x = glue("=O{2:l}*(P{2:l}*'návratnost'!B8+R{2:l})"), startCol = 20, startRow = 2)
+        writeFormula(wb, sheet = 2, x = glue("=IFERROR(O{2:l}*(P{2:l}*'návratnost'!B8+R{2:l}),0)"), startCol = 20, startRow = 2)
         # přínosy klient
-        writeFormula(wb, sheet = 2, x = glue("=O{2:l}*(Q{2:l}*'návratnost'!B12+S{2:l})"), startCol = 21, startRow = 2)
+        writeFormula(wb, sheet = 2, x = glue("=IFERROR(O{2:l}*(Q{2:l}*'návratnost'!B12+S{2:l}),0)"), startCol = 21, startRow = 2)
         
         # návratnost
         writeFormula(wb, sheet = 3, x = '=B2/(B6+B10-B4)', startCol = 2, startRow = 1)
