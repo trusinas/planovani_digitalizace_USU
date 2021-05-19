@@ -123,9 +123,9 @@ server <- function(input, output) {
         # návratnost
         writeFormula(wb, sheet = 3, x = '=B2/(B6+B10-B4)', startCol = 2, startRow = 1)
         writeFormula(wb, sheet = 3, x = '=B6+B10', startCol = 2, startRow = 3)
-        writeFormula(wb, sheet = 3, x = "=SUM('seznam úkonů'!T:T)", startCol = 2, startRow = 6)
+        writeFormula(wb, sheet = 3, x = "=SUBTOTAL(9, 'seznam úkonů'!T:T)", startCol = 2, startRow = 6)
         writeFormula(wb, sheet = 3, x = "=2*B7/173.92/60", startCol = 2, startRow = 8)
-        writeFormula(wb, sheet = 3, x = "=SUM('seznam úkonů'!U:U)", startCol = 2, startRow = 10)
+        writeFormula(wb, sheet = 3, x = "=SUBTOTAL(9, 'seznam úkonů'!U:U)", startCol = 2, startRow = 10)
         writeFormula(wb, sheet = 3, x = "=B11/2008/60", startCol = 2, startRow = 12)
         
         #nadefinování stylů buněk pro list info
