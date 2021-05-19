@@ -169,7 +169,7 @@ server <- function(input, output) {
         protectWorksheet(wb, 2, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
                          lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
                          lockAutoFilter = FALSE, lockSorting = FALSE)
-        addStyle(wb, 2, style = createStyle(locked = F, fgFill = "yellow1"), rows = 2:9, cols = 15:19, gridExpand = T)
+        addStyle(wb, 2, style = createStyle(locked = F, fgFill = "yellow1"), rows = 2:l, cols = 15:19, gridExpand = T)
         
         #zamknutí buněk - list 3
         protectWorksheet(wb, 3, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
