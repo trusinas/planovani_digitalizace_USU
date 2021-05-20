@@ -1,5 +1,6 @@
 library(shiny)
-library(tidyverse)
+library(dplyr)
+library(readr)
 library(jsonlite)
 library(glue)
 library(openxlsx)

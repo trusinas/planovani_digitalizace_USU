@@ -1,4 +1,7 @@
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(readr)
 library(jsonlite)
 
 # vytvoření adresářů
