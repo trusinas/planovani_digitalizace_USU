@@ -1,0 +1,6 @@
+app.R
+R/_disable_autoload.R
+output/sluzby.rds
+output/ovm.rds
+output/agendy.rds
+data/navod.txt

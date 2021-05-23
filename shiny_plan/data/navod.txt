@@ -1,0 +1,14 @@
+Stručný návod na použití tabulky:
+V případě digitalizace pomocí samoobslužného portálu je hlavním vodítkem, zda se investice vyplatí, vypočet návratnosti, který určuje, za kolik let by se investice vrátila.
+V prvním kroku je nutné si přečíst příručku. V ní je uvedeno, jaké údaje jsou nutné pro výpočet.
+Vstupní hodnoty se uvádí do žlutě zvýrazněných buněk v listu „seznam úkonů“. Pokud údaj nevíte, vyplňte hodnotou „0“. Pokud je hodnota v rozmezí (např. 400-900), přikloňte se k nižšímu údaji. V šedivě vyznačeném poli se po vyplnění údajů vypočítají výsledné hodnoty přínosů, jak ze strany úředníka, tak klienta. Pro údaje týkající se úspor se vychází z úspory oproti osobnímu podání/vyřizování žádosti.
+Stručný popis jednotlivých údajů – list „seznam úkonů“
+- pocet rocne – počet úkonů, které klient průměrně za rok uskuteční
+- uspora.minut-urednik – kolik minut by mohl úředník uspořit, pokud by zpracování bylo plně/částečně automatizováno; hodnota se uvádí v minutách
+- uspora.minut-klient – kolik minut by mohl klient uspořit, pokud by úkon byl dostupný na samoobslužném portále; je nutné zohlednit cestu na úřad a zpátky, zrychlení digitálního podání (předvyplnění formuláře, dynamické zobrazování částí formuláře dle předchozích odpovědí atd.), čekání na úřadě; hodnota se uvádí v minutách
+- uspora.material-urednik – kolik Kč na materiálu by úředník mohl ušetřit, pokud by úkon probíhal digitálně (např. náklad v rámci kopie žádosti, papír, toner, viz příručka); hodnota se udává v Kč 
+- uspora.material-klient – kolik Kč na materiálu by klient mohl ušetřit, pokud by úkon probíhal digitálně; hodnota se udává v Kč 
+Posledním krokem je na listu „návratnost“ vyplnit „iniciální investiční výdaj (Kč)“ a „roční provozní výdaje (Kč)“. Následně se vypočítá návratnost. Pokud jsou výdaje v rozmezí (např. 30 000 000 – 35 000 000), vyplňte vyšší hodnotu.
+Stručný popis jednotlivých údajů – list „návratnost“
+- iniciální investiční výdaj (Kč) – odhad ceny daného portálového řešení; hodnota se udává v Kč
+- roční provozní výdaje (Kč) – odhad provozních výdajů na samoobslužný portál; hodnota se udává v Kč
