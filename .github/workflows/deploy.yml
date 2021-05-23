@@ -1,0 +1,53 @@
+name: deploy-shiny
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy-shiny:
+    runs-on: ubuntu-20.04
+    steps:
+    # zkopírování repozitory
+      - uses: actions/checkout@v2
+    
+    # instalace R
+      - name: setup-r
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.0.5'
+    
+    # instalace závislostí
+      - run: sudo apt-get install -y --no-install-recommends libcurl4-openssl-dev
+            
+    # cache nainstalovaných knihoven
+      - name: Cache R packages
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-etl
+          restore-keys: |
+            ${{ runner.os }}-
+    
+    # instalace knihoven (pokud nejsou v cache)
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: Rscript -e "install.packages(c('dplyr', 'glue', 'jsonlite', 'openxlsx', 'readr', 'rsconnect', 'shiny', 'stringr', 'tidyr'))"
+    
+    # kontrola adresáře
+      - run: pwd
+      - run: ls
+      - run: cd shiny_plan/
+            
+    # aktualizace dat
+      - run:  echo 'wd <- getwd() /
+                setwd(paste0(wd, "/shiny_plan"))' > wd.R
+      - run: Rscript -e "source('wd.R')"
+      - run: Rscript -e "source('R/etl.R')"
+    
+    # nasazeni do shinyapps.io
+      - run: Rscript -e "rsconnect::setAccountInfo(name='egov', token=${{secrets.EGOV_SHINYAPPS_TOKEN}}, secret=${{secrets.EGOV_SHINYAPPS_SECRET}})"
+      - run: Rscript -e "rsconnect::deployApp(appFileManifest = 'data/fileManifest.txt', appName = 'plan_digitalizace')"
