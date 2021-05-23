@@ -37,17 +37,14 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: Rscript -e "install.packages(c('dplyr', 'glue', 'jsonlite', 'openxlsx', 'readr', 'rsconnect', 'shiny', 'stringr', 'tidyr'))"
     
-    # kontrola adresáře
-      - run: pwd
-      - run: ls
-      - run: cd shiny_plan/
-            
     # aktualizace dat
-      - run:  echo 'wd <- getwd()' > wd.R
-      - run:  echo 'setwd(paste0(wd, "/shiny_plan"))' >> wd.R
-      - run: Rscript -e "source('wd.R')"
-      - run: Rscript -e "source('R/etl.R')"
+      - name: Update data
+        run: Rscript -e "source('R/etl.R')"
+        working-directory: ./shiny_plan
     
     # nasazeni do shinyapps.io
-      - run: Rscript -e "rsconnect::setAccountInfo(name='egov', token=${{secrets.EGOV_SHINYAPPS_TOKEN}}, secret=${{secrets.EGOV_SHINYAPPS_SECRET}})"
-      - run: Rscript -e "rsconnect::deployApp(appFileManifest = 'data/fileManifest.txt', appName = 'plan_digitalizace')"
+      - name: Deploy to shinyapps.io
+        run: |
+          Rscript -e "rsconnect::setAccountInfo(name='egov', token=${{secrets.EGOV_SHINYAPPS_TOKEN}}, secret=${{secrets.EGOV_SHINYAPPS_SECRET}})"
+          Rscript -e "rsconnect::deployApp(appFileManifest = 'data/fileManifest.txt', appName = 'plan_digitalizace')"
+        working-directory: ./shiny_plan
