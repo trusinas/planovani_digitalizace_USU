@@ -43,8 +43,8 @@ jobs:
       - run: cd shiny_plan/
             
     # aktualizace dat
-      - run:  echo 'wd <- getwd() /
-                setwd(paste0(wd, "/shiny_plan"))' > wd.R
+      - run:  echo 'wd <- getwd()' > wd.R
+      - run:  echo 'setwd(paste0(wd, "/shiny_plan"))' >> wd.R
       - run: Rscript -e "source('wd.R')"
       - run: Rscript -e "source('R/etl.R')"
     
