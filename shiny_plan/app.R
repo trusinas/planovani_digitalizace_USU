@@ -16,6 +16,8 @@ library(stringr)
     # aktualizace dat - GitHub action
     # tlačítko pro vygenerování a stažení XLSX
 
+source("R/func.R", encoding = "UTF-8")
+
 # načtení dat
 sluzby <- read_rds("output/sluzby.rds")
 ovm <- read_rds("output/ovm.rds")
@@ -170,9 +172,7 @@ server <- function(input, output) {
                          lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE)
         
         #zamknutí buněk - list 2
-        protectWorksheet(wb, 2, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
-                         lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
-                         lockAutoFilter = FALSE, lockSorting = FALSE)
+        zamek.s.filtrem(wb, 2)
         addStyle(wb, 2, style = createStyle(locked = F, fgFill = "yellow1"), rows = 2:l, cols = 15:19, gridExpand = T)
         
         #zamknutí buněk - list 3
@@ -212,34 +212,14 @@ server <- function(input, output) {
         writeData(wb, "chybí portál", x = bez.portalu, colNames = TRUE, withFilter = T)
         
         # přidání stylů, formátování - chybějící kanály
-        addStyle(wb, 4, header, rows=1, cols=1:8)
-        setColWidths(wb, 4, cols=c(2,4,6,8), widths = 35) # nadefinování šířky sloupců - široké
-        setColWidths(wb, 4, cols=c(1,3,5), widths = 9) # nadefinování šířky sloupců - úzké
-        setColWidths(wb, 4, cols=c(7), widths = 15) # nadefinování šířky sloupců - mezi
-        freezePane(wb, 4, firstRow = T) # ukotvení 1. řádku 
-        
-        addStyle(wb, 5, header, rows=1, cols=1:8)
-        setColWidths(wb, 5, cols=c(2,4,6,8), widths = 35) # nadefinování šířky sloupců - široké
-        setColWidths(wb, 5, cols=c(1,3,5), widths = 9) # nadefinování šířky sloupců - úzké
-        setColWidths(wb, 5, cols=c(7), widths = 15) # nadefinování šířky sloupců - mezi
-        freezePane(wb, 5, firstRow = T) # ukotvení 1. řádku 
-        
-        addStyle(wb, 6, header, rows=1, cols=1:8)
-        setColWidths(wb, 6, cols=c(2,4,6,8), widths = 35) # nadefinování šířky sloupců - široké
-        setColWidths(wb, 6, cols=c(1,3,5), widths = 9) # nadefinování šířky sloupců - úzké
-        setColWidths(wb, 6, cols=c(7), widths = 15) # nadefinování šířky sloupců - mezi
-        freezePane(wb, 6, firstRow = T) # ukotvení 1. řádku
+        format.u.chybi(wb, 4)
+        format.u.chybi(wb, 5)
+        format.u.chybi(wb, 6)
         
         #zamknutí buněk - listy s chybějícími kanály
-        protectWorksheet(wb, 4, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
-                         lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
-                         lockAutoFilter = FALSE, lockSorting = FALSE)
-        protectWorksheet(wb, 5, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
-                         lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
-                         lockAutoFilter = FALSE, lockSorting = FALSE)
-        protectWorksheet(wb, 6, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
-                         lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
-                         lockAutoFilter = FALSE, lockSorting = FALSE)
+        zamek.s.filtrem(wb, 4)
+        zamek.s.filtrem(wb, 5)
+        zamek.s.filtrem(wb, 6)
         
         # QUESTION: jaká data v tabulce?
             # typ služby
