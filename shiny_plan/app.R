@@ -4,12 +4,8 @@ library(readr)
 library(jsonlite)
 library(glue)
 library(openxlsx)
-
-# Budoucí verze
-    # Aktuální data - opendata
-    # Přehled úkonů, kde chybí plán/zdůvodnění nevhodnosti
-    # Přehled úkonů, kde chybí digitální korespondenční kanál
-    # Přehled úkonů, kde chybí samoobslužný portál
+library(tidyr)
+library(stringr)
 
 # ETL
     # vytvoří DIR data a output
@@ -17,9 +13,8 @@ library(openxlsx)
     # zpracovat a uložit jako RDS
 # APP
     # výběr ÚSÚ a agendy (v obou př. lze více)
-    # TODO: aktualizace dat - GitHub action / manuálně
-    # tlačítko pro vygenerování XLSX
-    # stažení XLSX
+    # aktualizace dat - GitHub action
+    # tlačítko pro vygenerování a stažení XLSX
 
 # načtení dat
 sluzby <- read_rds("output/sluzby.rds")
@@ -62,6 +57,10 @@ ui <- fluidPage(
         
         # Output: Download a file ----
         downloadButton('downloadFile', 'Zprocesuj & stáhni', class= "action"),
+        
+        
+        h4("Novinky"),
+        p("Do exportovaného excelu přidán seznam úkonů, které nejsou dostupné v jednotlivých digitálních kanálech.")
     )
     
 )
@@ -81,22 +80,27 @@ server <- function(input, output) {
     })
     
     # zpracování tabulky
-    processed <-reactive({
+    vybrane.sluzby <-reactive({
         req(input$usu)
         sluzby <- sluzby %>% 
             filter(kod.agendy %in% input$agenda)
-       
-         # vytvoření listů v souboru
+    })
+    processed <-reactive({
+        
+        # vytvoření listů v souboru
         wb <- createWorkbook()
         addWorksheet(wb, "info")
         addWorksheet(wb, "seznam úkonů")
         addWorksheet(wb, "návratnost")
+        addWorksheet(wb, "chybí datová schránka")
+        addWorksheet(wb, "chybí uz. el. podpis")
+        addWorksheet(wb, "chybí portál")
         
        
         # základ pro vzorec
-        l <- nrow(sluzby)
+        l <- nrow(vybrane.sluzby())
         l <- l + 1
-        sluzby <- sluzby %>% 
+        sluzby <- vybrane.sluzby() %>% 
             mutate(
                 'přínosy úředník' = "",
                 'přínosy klient' = ""
@@ -111,7 +115,6 @@ server <- function(input, output) {
         vzorec$x2 <- as.integer(vzorec$x2)
         
         # vyplnění dat do specifických listů
-        # writeData(wb, "info", x = info, colNames = FALSE)
         writeData(wb, "info", x = info, colNames = FALSE)
         writeData(wb, "seznam úkonů", x = sluzby, colNames = TRUE, withFilter = T) # na první řádek přidán autom. filtr
         writeData(wb, "návratnost", x = vzorec, colNames = FALSE)
@@ -129,7 +132,7 @@ server <- function(input, output) {
         writeFormula(wb, sheet = 3, x = "=SUBTOTAL(9, 'seznam úkonů'!U:U)", startCol = 2, startRow = 10)
         writeFormula(wb, sheet = 3, x = "=B11/2008/60", startCol = 2, startRow = 12)
         
-        #nadefinování stylů buněk pro list info
+        # nadefinování stylů buněk pro list info
         navod.text <- createStyle(fgFill = "white")
         zalamovat <- createStyle(wrapText = T)
         
@@ -154,7 +157,7 @@ server <- function(input, output) {
         setColWidths(wb, 1, cols = 1, widths = 117) # nadefinování šířky sloupců - široké
         addStyle(wb, 1, navod.text, rows = 2:15, cols = 1, stack = TRUE) # pozadí textu
         addStyle(wb, 1, zalamovat, rows = 2:15, cols = 1, stack = TRUE) # zalamování textu
-        addStyle(wb, 1, header, rows = c(5, 12), cols = 1, gridExpand = FALSE, stack = TRUE)
+        addStyle(wb, 1, header, rows = c(5, 12, 15), cols = 1, gridExpand = FALSE, stack = TRUE)
         
         # přidání stylů, formátování - návratnost
         addStyle(wb, 3, vyplnit, rows=c(2, 4), col=2, gridExpand = F)
@@ -183,10 +186,60 @@ server <- function(input, output) {
         
         # TODO: přejmenování sloupců - ke službám přidat názvy
         
-        # TODO: přidání seznamu problematických úkonů
-        # bez datovky
-        # bez el. podpisu
+        # přidání seznamu úkonů - chybějící kanály
+        # bez DS
+        bez.ds <- vybrane.sluzby() %>% 
+            filter(!str_detect(kanal, "DATOVA_SCHRANKA")) %>% 
+            select(kod.agendy, nazev.agendy, id.sluzby, nazev.sluzby, id.ukonu, nazev.ukonu, digi.vhodny, kanal)
+        
+        # bez podpisu
+        bez.uep <- vybrane.sluzby() %>% 
+            filter(!str_detect(kanal, "EL_PODPIS")) %>% 
+            select(kod.agendy, nazev.agendy, id.sluzby, nazev.sluzby, id.ukonu, nazev.ukonu, digi.vhodny, kanal)
+        
         # bez portálu
+        bez.portalu <- vybrane.sluzby() %>% 
+            filter(!str_detect(kanal, "PORTAL")) %>% 
+            select(kod.agendy, nazev.agendy, id.sluzby, nazev.sluzby, id.ukonu, nazev.ukonu, digi.vhodny, kanal)
+        
+        # bez datovky
+        writeData(wb, "chybí datová schránka", x = bez.ds, colNames = TRUE, withFilter = T)
+        
+        # bez el. podpisu
+        writeData(wb, "chybí uz. el. podpis", x = bez.uep, colNames = TRUE, withFilter = T)
+       
+         # bez portálu
+        writeData(wb, "chybí portál", x = bez.portalu, colNames = TRUE, withFilter = T)
+        
+        # přidání stylů, formátování - chybějící kanály
+        addStyle(wb, 4, header, rows=1, cols=1:8)
+        setColWidths(wb, 4, cols=c(2,4,6,8), widths = 35) # nadefinování šířky sloupců - široké
+        setColWidths(wb, 4, cols=c(1,3,5), widths = 9) # nadefinování šířky sloupců - úzké
+        setColWidths(wb, 4, cols=c(7), widths = 15) # nadefinování šířky sloupců - mezi
+        freezePane(wb, 4, firstRow = T) # ukotvení 1. řádku 
+        
+        addStyle(wb, 5, header, rows=1, cols=1:8)
+        setColWidths(wb, 5, cols=c(2,4,6,8), widths = 35) # nadefinování šířky sloupců - široké
+        setColWidths(wb, 5, cols=c(1,3,5), widths = 9) # nadefinování šířky sloupců - úzké
+        setColWidths(wb, 5, cols=c(7), widths = 15) # nadefinování šířky sloupců - mezi
+        freezePane(wb, 5, firstRow = T) # ukotvení 1. řádku 
+        
+        addStyle(wb, 6, header, rows=1, cols=1:8)
+        setColWidths(wb, 6, cols=c(2,4,6,8), widths = 35) # nadefinování šířky sloupců - široké
+        setColWidths(wb, 6, cols=c(1,3,5), widths = 9) # nadefinování šířky sloupců - úzké
+        setColWidths(wb, 6, cols=c(7), widths = 15) # nadefinování šířky sloupců - mezi
+        freezePane(wb, 6, firstRow = T) # ukotvení 1. řádku
+        
+        #zamknutí buněk - listy s chybějícími kanály
+        protectWorksheet(wb, 4, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
+                         lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
+                         lockAutoFilter = FALSE, lockSorting = FALSE)
+        protectWorksheet(wb, 5, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
+                         lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
+                         lockAutoFilter = FALSE, lockSorting = FALSE)
+        protectWorksheet(wb, 6, lockInsertingColumns = TRUE, lockInsertingRows = TRUE, lockDeletingColumns = TRUE, lockDeletingRows = TRUE,
+                         lockFormattingCells = FALSE, lockFormattingColumns = FALSE, lockFormattingRows = FALSE,
+                         lockAutoFilter = FALSE, lockSorting = FALSE)
         
         # QUESTION: jaká data v tabulce?
             # typ služby
