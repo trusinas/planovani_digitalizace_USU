@@ -122,13 +122,11 @@ kanaly <- sluzby %>%
   distinct() %>% 
   unnest_longer(kanaly) %>% 
   unnest_wider(kanaly) %>% 
-  select(id.ukonu, kanal = 'typ-kanálu') %>% 
-  mutate(kanal = str_remove(kanal, "typ-obslužného-kanálu/")) %>% 
-  group_by(id.ukonu) %>% 
-  summarise(kanal = paste(kanal, collapse = "; "))
-sluzby <- sluzby %>% 
-  select(-kanaly) %>% 
-  left_join(kanaly, by = "id.ukonu")
+  select(id.ukonu, kanal = 'typ-kanálu', realizovany = 'realizován', planovany.od = 'plán-od') %>% 
+  mutate(kanal = str_remove(kanal, "typ-obslužného-kanálu/"))
+
+# kanály - uložení
+write_rds(kanaly, "output/kanaly.rds")
 rm(kanaly)
 
 sluzby <- sluzby %>% 
@@ -163,5 +161,5 @@ rm(agendy, ko, ovm, sluzby.ovm)
   # úspora materiál - klient
 sluzby <- sluzby %>% 
   select(kod.agendy, nazev.agendy, id.sluzby, nazev.sluzby, popis.sluzby, typ.sluzby, ovm, nazev.ovm,
-         id.ukonu, nazev.ukonu, popis.ukonu, faze, digi.vhodny, kanal)
+         id.ukonu, nazev.ukonu, popis.ukonu, faze, digi.vhodny)
 write_rds(sluzby, "output/sluzby.rds")

@@ -12,4 +12,4 @@ Posledním krokem je na listu „návratnost“ vyplnit „iniciální investič
 Stručný popis jednotlivých údajů – list „návratnost“
 - iniciální investiční výdaj (Kč) – odhad ceny daného portálového řešení; hodnota se udává v Kč
 - roční provozní výdaje (Kč) – odhad provozních výdajů na samoobslužný portál; hodnota se udává v Kč
-Listy chybí datová schránka, chybí uz. el. podpis a chybí portál obsahují seznam úkonů, které nejsou dostupné prostřednictvím příslušného digitálního kanálu.
+Listy chybí datová schránka, chybí uz. el. podpis a chybí portál obsahují seznam úkonů, které nejsou dostupné prostřednictvím příslušného digitálního kanálu při zohlednění plánu.

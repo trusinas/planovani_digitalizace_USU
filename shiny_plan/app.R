@@ -22,6 +22,7 @@ source("R/func.R", encoding = "UTF-8")
 sluzby <- read_rds("output/sluzby.rds")
 ovm <- read_rds("output/ovm.rds")
 agendy <- read_rds("output/agendy.rds")
+kanaly <- read_rds("output/kanaly.rds")
 
 # info - postup
 info <- read.delim("data/navod.txt", header = F, encoding = "UTF-8")
@@ -107,6 +108,16 @@ server <- function(input, output) {
                 'přínosy úředník' = "",
                 'přínosy klient' = ""
             )
+        # realizované kanály
+        realiz.kanaly <- kanaly %>% 
+            filter(realizovany == TRUE) %>% 
+            select(id.ukonu, kanal) %>% 
+            group_by(id.ukonu) %>% 
+            summarise(kanal = paste(kanal, collapse = "; "))
+        sluzby <- sluzby %>% 
+            left_join(realiz.kanaly, by = "id.ukonu") %>% 
+            relocate(kanal, .after = digi.vhodny)
+        
         # text vzorce
         vzorec <- tibble(x1 = c("návratnost (let)", "iniciální investiční výdaj (Kč)", "roční přínosy (Kč)", 
                                 "roční provozní výdaje (Kč)", "", "roční přínosy pro VS (Kč)", 
@@ -187,18 +198,25 @@ server <- function(input, output) {
         # TODO: přejmenování sloupců - ke službám přidat názvy
         
         # přidání seznamu úkonů - chybějící kanály
+        # zohlednění i plánovaných kanálů
+        vsechny.kanaly <- kanaly %>% 
+            select(id.ukonu, kanal) %>% 
+            group_by(id.ukonu) %>% 
+            summarise(kanal = paste(kanal, collapse = "; "))
+        sluzby.i.plan <- vybrane.sluzby() %>% 
+            left_join(vsechny.kanaly, by = "id.ukonu")
         # bez DS
-        bez.ds <- vybrane.sluzby() %>% 
+        bez.ds <- sluzby.i.plan %>% 
             filter(!str_detect(kanal, "DATOVA_SCHRANKA")) %>% 
             select(kod.agendy, nazev.agendy, id.sluzby, nazev.sluzby, id.ukonu, nazev.ukonu, digi.vhodny, kanal)
         
         # bez podpisu
-        bez.uep <- vybrane.sluzby() %>% 
+        bez.uep <- sluzby.i.plan %>% 
             filter(!str_detect(kanal, "EL_PODPIS")) %>% 
             select(kod.agendy, nazev.agendy, id.sluzby, nazev.sluzby, id.ukonu, nazev.ukonu, digi.vhodny, kanal)
         
         # bez portálu
-        bez.portalu <- vybrane.sluzby() %>% 
+        bez.portalu <- sluzby.i.plan %>% 
             filter(!str_detect(kanal, "PORTAL")) %>% 
             select(kod.agendy, nazev.agendy, id.sluzby, nazev.sluzby, id.ukonu, nazev.ukonu, digi.vhodny, kanal)
         
