@@ -4,4 +4,5 @@ R/func.R
 output/sluzby.rds
 output/ovm.rds
 output/agendy.rds
+output/kanaly.rds
 data/navod.txt
