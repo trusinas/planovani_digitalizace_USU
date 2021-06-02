@@ -63,6 +63,7 @@ ui <- fluidPage(
         
         
         h4("Novinky"),
+        p("Přidán plán digitalizace pro agendu (agendy)"),
         p("Do exportovaného excelu přidán seznam úkonů, které nejsou dostupné v jednotlivých digitálních kanálech.")
     )
     
@@ -98,6 +99,7 @@ server <- function(input, output) {
         addWorksheet(wb, "chybí datová schránka")
         addWorksheet(wb, "chybí uz. el. podpis")
         addWorksheet(wb, "chybí portál")
+        addWorksheet(wb, "plán digitalizace")
         
        
         # základ pro vzorec
@@ -238,6 +240,24 @@ server <- function(input, output) {
         zamek.s.filtrem(wb, 4)
         zamek.s.filtrem(wb, 5)
         zamek.s.filtrem(wb, 6)
+        
+        # plán za agendu
+        # plánované kanály
+        planovane.kanaly <- kanaly %>% 
+            filter(realizovany == FALSE) %>% 
+            select(id.ukonu, kanal, planovany.od)
+        planovane <- vybrane.sluzby() %>% 
+            left_join(planovane.kanaly, by = "id.ukonu") %>% 
+            select(-c(ovm, nazev.ovm, pocet.rocne, 'uspora.minut - urednik', 'uspora.minut - klient', 'uspora.material - urednik', 'uspora.material - klient')) %>% 
+            filter(!is.na(kanal) | !is.na(planovany.od))
+        writeData(wb, "plán digitalizace", x = planovane, colNames = TRUE, withFilter = T)
+        
+        # formátování
+        setColWidths(wb, 7, cols=c(2,4,5,8,9), widths = 35) # nadefinování šířky sloupců - široké
+        setColWidths(wb, 7, cols=c(1,3,6,7,10,11), widths = 9) # nadefinování šířky sloupců - úzké
+        setColWidths(wb, 7, cols=c(12), widths = 17) # nadefinování šířky sloupců - mezi
+        freezePane(wb, 7, firstRow = T) # ukotvení 1. řádku
+        addStyle(wb,7, header, rows=1, cols=1:13)
         
         # QUESTION: jaká data v tabulce?
             # typ služby
