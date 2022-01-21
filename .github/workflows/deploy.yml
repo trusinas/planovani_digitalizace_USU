@@ -2,9 +2,10 @@ name: deploy-shiny
 
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: '0 4 */4 * *'
   push:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   deploy-shiny:
@@ -46,5 +47,5 @@ jobs:
       - name: Deploy to shinyapps.io
         run: |
           Rscript -e "rsconnect::setAccountInfo(name='egov', token=${{secrets.EGOV_SHINYAPPS_TOKEN}}, secret=${{secrets.EGOV_SHINYAPPS_SECRET}})"
-          Rscript -e "rsconnect::deployApp(appFileManifest = 'data/fileManifest.txt', appName = 'plan_digitalizace', account = 'egov', forceUpdate = TRUE)"
+          Rscript -e "rsconnect::deployApp(appFileManifest = 'data/fileManifest.txt', appName = 'plan_digitalizace')"
         working-directory: ./shiny_plan
