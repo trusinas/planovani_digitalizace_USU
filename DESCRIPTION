@@ -1,8 +1,8 @@
-Package: planovani_digitalizace_USU
+Package: pdUSU
 Title: Shiny aplikace na podporu Prirucky
 Version: 0.0.0.9000
 Authors@R: 
-    person("Šimon", "Trusina", , "simon.trusinat@mvcr.cz", role = c("aut", "cre"))
+    person("Simon", "Trusina", , "simon.trusinat@mvcr.cz", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
