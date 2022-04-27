@@ -63,6 +63,7 @@ ui <- fluidPage(
         
         
         h4("Novinky"),
+        p("Aktualizace parametrů za rok 2021"),
         p("Přidán plán digitalizace pro agendu (agendy)"),
         p("Do exportovaného excelu přidán seznam úkonů, které nejsou dostupné v jednotlivých digitálních kanálech.")
     )
@@ -126,7 +127,7 @@ server <- function(input, output) {
                                 "průměrná mzda ve VS (Kč)", "průměrná mzda ve VS na minutu (Kč)", 
                                 "", "roční přínosy pro klienty (Kč)", "hrubý domácí produkt na obyvatele (Kč)", 
                                 "HDP na obyvatele na minutu (Kč)"),
-                         x2 = c("", 30000000, "", 6000000, "", "", 40572, "", "", "", 524867, ""))
+                         x2 = c("", 30000000, "", 6000000, "", "", 43232, "", "", "", 559534, ""))
         vzorec$x2 <- as.integer(vzorec$x2)
         
         # vyplnění dat do specifických listů
