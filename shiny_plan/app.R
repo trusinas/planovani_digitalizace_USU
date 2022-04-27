@@ -62,6 +62,8 @@ ui <- fluidPage(
         downloadButton('downloadFile', 'Zprocesuj & stáhni', class= "action"),
         
         
+        h3("Vládou schválený plán"),
+        tags$a(href="https://pma3.gov.cz/uploads/doc/Aktualizovana-podoba-planu-digitalizace-.xlsx", "Plán digitalizace schválený vládou 20.9.2021 usnesením č. 826"),
         h4("Novinky"),
         p("Aktualizace parametrů za rok 2021"),
         p("Přidán plán digitalizace pro agendu (agendy)"),
