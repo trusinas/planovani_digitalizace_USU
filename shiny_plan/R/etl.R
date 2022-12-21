@@ -8,6 +8,9 @@ library(jsonlite)
 if(!dir.exists("output")) dir.create("output")
 if(!dir.exists("data")) dir.create("data")
 
+# timout 120s
+options(timeout=120)
+
 # stažení dat
 download.file("https://rpp-opendata.egon.gov.cz/odrpp/datovasada/sluzby.json", "data/sluzby.json")
 download.file("https://rpp-opendata.egon.gov.cz/odrpp/datovasada/agendy.json", "data/agendy.json")
