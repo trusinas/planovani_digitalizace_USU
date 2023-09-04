@@ -34,5 +34,5 @@ jobs:
       - name: Deploy to shinyapps.io
         run: |
           Rscript -e "rsconnect::setAccountInfo(name='egov', token=${{secrets.EGOV_SHINYAPPS_TOKEN}}, secret=${{secrets.EGOV_SHINYAPPS_SECRET}})"
-          Rscript -e "rsconnect::deployApp(appFileManifest = 'data/fileManifest.txt', appName = 'plan_digitalizace')"
+          Rscript -e "rsconnect::deployApp(appFileManifest = 'data/fileManifest.txt', appName = 'plan_digitalizace', forceUpdate = TRUE)"
         working-directory: ./shiny_plan
